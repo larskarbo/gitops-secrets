@@ -1,6 +1,6 @@
 {
   "name": "@larskarbo/gitops-secrets",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Ryan Blunden <ryan.blunden@doppler.com>",
   "description": "SecretOps workflow for bundling encrypted secrets into your deployments to safely decrypt at runtime.",
   "main": "dist/index.js",
