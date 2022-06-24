@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import * as crypto from "crypto";
 
 const PBKDF2_ROUNDS = process.env.GITOPS_SECRETS_PBKDF2_ROUNDS || 1000000;
 const PBKDF2_KEYLEN = 32;
@@ -26,7 +26,7 @@ function masterKey() {
 function encrypt(secrets) {
   const salt = crypto.randomBytes(AES_SALT_BYTES);
   const iv = crypto.randomBytes(AES_IV_BYTES);
-  const key = crypto.pbkdf2Sync(masterKey(), salt, PBKDF2_ROUNDS, PBKDF2_KEYLEN, PBKDF2_DIGEST);
+  const key = crypto.pbkdf2Sync(masterKey(), salt, +PBKDF2_ROUNDS, PBKDF2_KEYLEN, PBKDF2_DIGEST);
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   const cipherText = Buffer.concat([cipher.update(JSON.stringify(secrets), TEXT_ENCODING), cipher.final()]);
   const authTag = cipher.getAuthTag();
@@ -37,10 +37,8 @@ function encrypt(secrets) {
 
 /**
  * Decrypt secrets in JSON format to Object
- * @param {string} secrets
- * @returns {string}
  */
-function decrypt(secrets) {
+function decrypt(secrets: string) {
   secrets = secrets.substring(`${ENCODING}:`.length);
 
   // Decode file contents
@@ -49,6 +47,7 @@ function decrypt(secrets) {
     throw new Error(`Encrypted payload invalid. Expected 4 sections but only got ${parts.length}`);
   }
 
+  //@ts-ignore
   const rounds = parseInt(Buffer.from(parts[0], TEXT_ENCODING), 10);
   const salt = Buffer.from(parts[1], ENCODING);
   const iv = Buffer.from(parts[2], ENCODING);
@@ -61,8 +60,12 @@ function decrypt(secrets) {
 
   // decrypt cipher text
   const decipher = crypto.createDecipheriv(ALGORITHM, key, iv).setAuthTag(authTag);
+  console.log('TEXT_ENCODING: ', TEXT_ENCODING);
+  //@ts-ignore
   const decrypted = decipher.update(cipherText, "binary", TEXT_ENCODING) + decipher.final("utf8");
-  return JSON.parse(decrypted);
+  return JSON.parse(decrypted) as {
+    [key: string]: string;
+  };
 }
 
 /**
@@ -84,9 +87,11 @@ function loadSecretsFromCipher(cipherText) {
   return { ...payload, populateEnv: () => populateEnv(payload) };
 }
 
-module.exports = {
+const exportObject = {
   encrypt: encrypt,
   decrypt: decrypt,
   populateEnv: populateEnv,
   loadSecretsFromCipher: loadSecretsFromCipher,
 };
+
+export default exportObject;

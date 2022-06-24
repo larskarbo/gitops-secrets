@@ -1,8 +1,13 @@
 {
   "name": "gitops-secrets",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "author": "Ryan Blunden <ryan.blunden@doppler.com>",
   "description": "SecretOps workflow for bundling encrypted secrets into your deployments to safely decrypt at runtime.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/DopplerHQ/gitops-secrets-nodejs.git"
@@ -30,16 +35,6 @@
   "engines": {
     "node": ">=12"
   },
-  "exports": {
-    ".": {
-      "require": "./src/index.js",
-      "import": "./src/index.js"
-    },
-    "./no-fs": {
-      "require": "./src/no-fs.js",
-      "import": "./src/no-fs.js"
-    }
-  },
   "scripts": {
     "test": "jest",
     "lint": "eslint ./src ./tests",
@@ -47,12 +42,12 @@
     "prettier-check": "prettier --check .",
     "prepublishOnly": "sed -i \"s/development/$npm_package_version/\" src/meta.js"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@jest/globals": "^27.5.1",
+    "@types/node": "^18.0.0",
     "babel-jest": "^27.5.1",
     "eslint": "^8.11.0",
     "eslint-plugin-import": "^2.25.4",
@@ -60,6 +55,8 @@
     "eslint-plugin-security": "^1.4.0",
     "jest": "^27.5.1",
     "jest-node-exports-resolver": "^1.1.5",
-    "prettier": "^2.6.0"
+    "node-fetch": "^2.6.7",
+    "prettier": "^2.6.0",
+    "typescript": "^4.7.4"
   }
 }
